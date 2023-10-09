@@ -201,3 +201,33 @@ public class DemoPublisher {
 ### （2）Spring MVC中的适配器模式
 
 ## 8.装饰者模式
+
+# Springboot的自动装配
+
+为了优化Spring的xml配置，引入了Springboot，只需要添加相关依赖，无需配置就能使用，还能通过修改application.properties或application.yml来修改项目相关配置信息
+
+Springboot这主要得力于其自动装配
+
+## 概念
+
+Springboot定义了一套接口规范：Springboot启动时会扫描外部引用jar包中的META-INF/Spring.factories文件，将文件中配置的类信息加载到Spring容器，并执行类中定义的各种操作（对于外部的jar只需要按照Springboot定义的标准就能吧自己的功能装置进Springboot）
+
+简单来说：通过注解或者一些简单的配置就能在Spring Boot的帮助下实现某块功能
+
+## 实现
+
+首先看启动类那里的注解SpringBootApplication（Springboot的核心注解）
+
+主要包含三部分
+
+- @EnableAutoConfiguration：启用SpringBoot的自动配置机制
+- @Configuration：允许在上下文中注册额外的bean或导入其他配置类
+- @ComponentScan：扫描被@Component（@Service，@Controller）注解的bean，注解默认会扫描启动类所在的包下所有的类，可以自定义不扫描某些bean
+
+```java
+@ComponentScan(excludeFilters = {@Filter(type = FilterType.CUSTOM,classes = xxx.class),
+@Filter(type = FilterType.CUSTOM,classes = xxx.class)
+})
+```
+
+#### （1）@EnableAutoConfiguration：实现自动装配的核心注解
