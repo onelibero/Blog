@@ -135,4 +135,69 @@ Spring 中 `JdbcTemplate`、`HibernateTemplate` 等以 Template 结尾的对数�
 
 ## 6.观察者模式
 
-观察者模式是一种对象行为型模式，他表示的是一种对象与对象之间具有依赖关系，当一个对象发生改变的时候，依赖这个对象的所有对象也会做出反应
+观察者模式是一种对象行为型模式，他表示的是一种对象与对象之间具有依赖关系，当一个对象发生改变的时候，依赖这个对象的所有对象也会做出反应（如Spring事件驱动模型）
+
+### Spring事件驱动模型的三种角色
+
+#### （1）事件角色
+
+#### （2）事件监听角色
+
+#### （3）事件发布角色
+
+#### Spring的事件流程
+
+1. 定义一个事件
+2. 定义一个事件监听
+3. 使用事件发布者发布消息
+
+```java
+// 定义一个事件,继承自ApplicationEvent并且写相应的构造函数
+public class DemoEvent extends ApplicationEvent{
+    private static final long serialVersionUID = 1L;
+
+    private String message;
+
+    public DemoEvent(Object source,String message){
+        super(source);
+        this.message = message;
+    }
+
+    public String getMessage() {
+         return message;
+          }
+
+
+// 定义一个事件监听者,实现ApplicationListener接口，重写 onApplicationEvent() 方法；
+@Component
+public class DemoListener implements ApplicationListener<DemoEvent>{
+
+    //使用onApplicationEvent接收消息
+    @Override
+    public void onApplicationEvent(DemoEvent event) {
+        String msg = event.getMessage();
+        System.out.println("接收到的信息是："+msg);
+    }
+
+}
+// 发布事件，可以通过ApplicationEventPublisher  的 publishEvent() 方法发布消息。
+@Component
+public class DemoPublisher {
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    public void publish(String message){
+        //发布事件
+        applicationContext.publishEvent(new DemoEvent(this, message));
+    }
+}
+```
+
+## 7.适配器模式
+
+### （1）Spring AOP中的适配器模式
+
+### （2）Spring MVC中的适配器模式
+
+## 8.装饰者模式
