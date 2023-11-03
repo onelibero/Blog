@@ -275,9 +275,306 @@ export default{
 
 针对v-on提供了事件修饰符
 
-- .stop
-- .prevent
-- .once
-- .enter
+- .stop（阻止事件冒泡）
+- .prevent（阻止默认事件）
+- .once（阻止一次性事件）
+- .enter（阻止键盘事件）
 
 ### (1)阻止事件
+
+下面这两种方式均能阻止页面点击后跳转
+
+```html
+<template>
+<a @click.prevent="clickHandle" href="https://***">测试</a>
+<a @click="clickHandle1" href="https://***">测试</a>
+</template>
+<script>
+export default{
+  data(){
+    return{
+      msg:"appid",
+      msg1:"appclass"
+      msg2:{
+        id:"appid",
+        class:"appclass"
+      }
+    }
+  },
+  methods:{
+   clickHandle1(e){e.preventDefault();} 
+  }
+}
+</script>
+```
+
+### （2）事件冒泡
+
+```html
+<template>
+<div @click="clickTest1">
+<p @click="clickTest2">测试</p>    // <p @click.stop="clickTest2">测试</p>
+</div>
+
+</template>
+<script>
+export default{
+  data(){
+    return{
+      msg:"appid",
+      msg1:"appclass"
+      msg2:{
+        id:"appid",
+        class:"appclass"
+      }
+    }
+  },
+  methods:{
+   clickTest1(){},
+   clickTest2(e){e.stopPropagation();} 
+  }
+}
+</script>
+```
+
+这时如果没有加以限制，那么两个方法均会被触发，加了阻止事件之后可以选择触发
+
+## 7.数组变换侦听
+
+vue能够侦听响应式数组的变更方法，并在被调用时自动更新
+
+- push（）
+- pop（）
+- shift（）
+- unshift（）
+- splice（）
+- sort（）
+- reverse（）
+
+对于某些方法页面UI不会自动更新（主要是方法本身不是更新原数组而是返回新数组）
+
+- filter（）
+- concat（）
+- slice（）
+
+## 8.计算属性
+
+避免模板语法里面有过多复杂计算代码
+
+```
+<template>
+<p>{{Test}}</p>  
+</div>
+
+</template>
+<script>
+export default{
+  data(){
+    return{
+     
+      }
+    }
+  },
+ //存放计算属性
+  computed:{
+      Test(){
+         return 加具体条件;    //注意用到data里面的值时用到this
+      }
+   }
+}
+</script>
+```
+
+### 与方法的区别（调用方法也能实现如上结果）
+
+计算属性：计算属性值会基于响应式依赖被缓存，一个计算属性仅在其响应式依赖更新时才重新计算
+
+方法：方法调用总是会在渲染时发生时再次执行函数
+
+## 9.class绑定
+
+class进行了增强，v-bind里面可以绑定数组（数组指定对应的css样式），对象（标签指定对应的样式，通过true或false来判断是否展示）
+
+哪个为true就展示哪个的效果
+
+```html
+<template>
+<p :class="{'active':isActive,'text-danger':hasError}">测试</p>  
+
+<p :class="{"classObject"}">测试2</p>   //绑定多个对象
+
+<p :class="[arrActive,arrHasError]">测试3</p>   //数组
+
+<p :class="[isActive ? 'active' : '']">测试4</p>
+</div>
+
+</template>
+<script>
+export default{
+  data(){
+    return{
+       isActive:true,
+       hasError:true,
+       classObject:{
+          'active':true,
+           'text-danger':true
+       }
+        arrActive:"active",
+        arrHasError:"text-danger"
+      }
+    }
+  },
+ //存放计算属性
+  computed:{
+      Test(){
+         return 加具体条件;    //注意用到data里面的值时用到this
+      }
+   }
+}
+</script>
+<style>
+.active{
+font-size:10px;
+}
+.text-danger{
+color:red;
+}
+</style>
+```
+
+> 数组和对象嵌套过程中，只能是数组嵌套对象
+
+## 10.style绑定
+
+- 绑定对象
+- 绑定数组（一般不用）
+
+```html
+<template>
+<p :style="{"color:activeColor,fontSize:fontSize+'px'"}">测试1</p>
+<p :style="{"classObject"}">测试2</p> 
+</div>
+</template>
+<script>
+export default{
+  data(){
+    return{
+       activeColor:"green",
+       fontSize:30,
+       classObject:{
+          color:"red",
+           fontSize:"30px"
+       }
+      }
+    }
+  },
+
+</script>
+```
+
+## 11.侦听器
+
+可以选择使用watch来监听响应式数据
+
+```html
+<template>
+<div @click="clickTest1">
+<p @click="clickTest2">测试</p>    
+</div>
+
+</template>
+<script>
+export default{
+  data(){
+    return{
+      msg:"appid",
+    }
+  },
+  methods:{
+   clickTest1(){
+      this.msg= "appid222"
+    },
+  }，
+   watch:{
+    message(newValue,oldValue)
+    //可以取到新旧值，数据发生变换时自动执行的函数
+   }
+}
+</script>
+```
+
+## 12.表单数据绑定
+
+在前端处理表单时，v-model可以帮我们手动简化表单输入内容同步到js中对应变量的过程
+
+```
+v-model="变量名"
+<template>
+<form>
+ <input type="text" v-model="message">
+ <p>{{ message }}</p>
+ <input type="checkbox" id="checkbox" v-model="checked" />
+ <label for="checkbox"> {{ checked }} </label>
+</form>
+</div>
+
+</template>
+<script>
+export default{
+  data(){
+    return{
+      message:"",
+      checked:false
+    }
+  },
+ 
+}
+</script>
+```
+
+修饰符
+
+- .lazy
+  - `v-model.lazy：`回车/失去焦点后才会获得
+- .number
+  - `v-model.number`：只接收数字
+- .trim
+  - `v-model.trim：`区分空格
+
+## 13.模板引用
+
+可以通过操作DOM获取相关操作
+
+标签内使用 `ref="元素名"` 方法内使用 `this.$refs.元素名.相关操作`
+
+# 组件
+
+组件可以扩展 HTML 元素，封装可重用的代码。在较高层面上，组件是自定义元素， Vue.js 的编译器为它添加特殊功能。在有些情况下，组件也可以是原生 HTML 元素的形式，以 is 特性扩展
+
+简单来说就是一个vue文件就是一个组件，具体操作
+
+- 新建vue文件
+- 在App.vue中导入组件
+- 在App.vue中注入组件
+- 在App.vue中使用组件
+  - style里面的scoped（添加这个之后只会让当前样式在当前页面生效）
+
+```html
+<template>
+  <HelloWorld/>
+</template>
+
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
+export default {
+  components: {
+    HelloWorld
+  }
+}
+</script>
+<style scoped>
+</style>
+```
+
+## 1.组件嵌套关系
